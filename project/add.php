@@ -1,4 +1,5 @@
 <?php
+	include('config/db_connect.php');
 	$email = $title = $ingredients = '';
 	$error = array('email' => '', 'title' => '', 'ingredients' => '');
 	if(isset($_POST['submit'])){
@@ -33,20 +34,29 @@
 		else{
 			$error['ingredients'] = "<h6 style='color: red;'>ingredients is required</h6>";
 		}
+		// if exsist return 1
 		if(array_filter($error)){
 			echo 'error in the form';
-	}	
+		}	
 		else{
-			header('Location: index.php');
+			$email = mysqli_real_escape_string($conn, $_POST['email']);
+			$title = mysqli_real_escape_string($conn, $_POST['title']);
+			$ingredients = mysqli_real_escape_string($conn, $_POST['ingredients']);
+
+			$sql = "INSERT INTO pizzas(title, email, ingredients) values('$title', '$email', '$ingredients')";
+			if(mysqli_query($conn, $sql)){
+				header('Location: index.php');
+			}
+			else{
+				echo "Query error: ".mysqli_error($conn);
+			}
 		}
 	}
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
-	<?php include('header.php'); ?>	
+	<?php include('/templates/header.php'); ?>	
 	<section class="container grey-text">
 		<h4 class="center">Add a pizza</h4>
 		<form action="add.php" method="POST" class="white" accept-charset="utf-8">
@@ -65,5 +75,5 @@
 
 		</form>
 	</section>
-	<?php include('footer.php'); ?>	
+	<?php include('/templates/footer.php'); ?>	
 </html>
